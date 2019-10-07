@@ -26,7 +26,7 @@ var chartGroup = svg.append("g")
 
 // *****************************UPDATE FUNCTIONS********************************
 // Default selected x-axis label
-var chosenXAxis = "In Poverty (%)";
+var chosenXAxis = "poverty";
 
 // -----------------------------X-axis functions--------------------------------
 // Update x scale function
@@ -48,13 +48,26 @@ var chosenXAxis = "In Poverty (%)";
 
 // Update the circlesGroup
 // var updateCirclesGroup = function(circlesGroup, newXScale, chosenXAxis){
-//   if (chosenXAxis === "In Poverty (%)"){
+//   // Determine the value of 'label' based on chosenXAxis' value
+//   if (chosenXAxis === "poverty"){
 //     var label = "In Poverty (%)";
-//   }else if (chosenXAxis === "Age (Median)"){
+//   }else if (chosenXAxis === "age"){
 //     var label = "Age (Median)";
 //   }else{
 //     var label = "Household Income (Median)"
 //   }
+//
+//   // Initialize the tooltip
+//   var toolTip = d3.tip()
+//         .attr("class", "tooltip")
+//         .attr("display")
+//         .html(function(d){
+//           `${label}: <strong>${d.[chosenXAxis]}</strong>`
+//
+//
+//         })
+
+
 // }
 
 
@@ -73,7 +86,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
   if (error) throw (error);
 
   // Determine if the data needs cleaning
-  console.log(data);
+  // console.log(data);
 
   // Parse the data and convert everything within the forEach function to numbers
     // Moe = Margin of error
@@ -112,8 +125,9 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Create the y-axis scale
   var yLinearScale = d3.scaleLinear()
-        // Highest tick is always the highest healthcare value in the data
-        .domain([0, d3.max(data, d => d.healthcare)])
+        // Adjust the top y-axis tick to ensure the circles do not overlap the
+          // top of the chart
+        .domain([0, d3.max(data, d => d.healthcare) + 1])
         // Move the 0 value to the bottom of the visualization's y-axis
         .range([chartGroupHeight, 0]);
 
@@ -136,10 +150,8 @@ d3.csv("./assets/data/data.csv", function(error, data){
   // ----------------------------X-axis labels----------------------------------
 
   // Currently selected x-axis label
-  // var activeXLabel = chartGroup.append("text")
-  //       .on("click", (d, i) => {
-  //         d3.select(this)
-  //       })
+  // var activeXLabel
+
 
   // Poverty label
   var povertyLabel = chartGroup.append("text")
@@ -204,19 +216,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
         .text("Obese (%)");
 
 
-  // State labels for the circles
-  // selectAll(null) to ensure enter() applies to every datum in the dataset
-  var circleLabels = chartGroup.selectAll(null)
-        .data(data)
-        .enter()
-        .append("text")
-          .attr("x", d => xLinearScale(d.poverty))
-          .attr("y", d => yLinearScale(d.healthcare))
-          .attr("text-anchor", "middle")
-          .style("font-size", "9px")
-          .style("font-weight", "bold")
-          .attr("fill", "black")
-          .text(d => d.abbr);
+
 
 // ******************************UPDATE PATTERN*********************************
   // Append circles
@@ -224,13 +224,26 @@ d3.csv("./assets/data/data.csv", function(error, data){
         .data(data)
         .enter()
         .append("circle")
+        // Styling from d3Style.css
+        .classed("stateCircle", true)
           .attr("cx", d => xLinearScale(d.poverty))
           .attr("cy", d => yLinearScale(d.healthcare))
           .attr("r", "10")
-          .attr("fill", "lightskyblue")
-          .attr("stroke", "black")
-          .attr("opacity", 0.4);
 
+
+  // State (abbreviation) labels for the circles
+  // selectAll(null) to ensure enter() applies to every datum in the dataset
+  var circleLabels = chartGroup.selectAll(null)
+        .data(data)
+        .enter()
+        .append("text")
+          // Styling from d3Style.css
+          .classed("stateText", true)
+          .attr("x", d => xLinearScale(d.poverty))
+          .attr("y", d => yLinearScale(d.healthcare))
+          .style("font-size", "9px")
+          .style("font-weight", "bold")
+          .text(d => d.abbr);
 
   // Click event to update chartGroup depending on the label clicked
   // circles.on("click", function(d){
