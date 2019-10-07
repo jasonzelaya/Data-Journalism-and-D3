@@ -7,8 +7,8 @@ var svgWidth = 800,
     svgHeight = 600;
 
 // Chart/visualization dimensions
-var chartWidth = svgWidth - margin.left - margin.right, // 680px
-    chartHeight = svgHeight - margin.top - margin.bottom; // 480px
+var chartGroupWidth = svgWidth - margin.left - margin.right, // 680px
+    chartGroupHeight = svgHeight - margin.top - margin.bottom; // 480px
 
 // Create SVG wrapper
 var svg = d3.select("#scatter")
@@ -20,8 +20,8 @@ var svg = d3.select("#scatter")
       .attr("height", svgHeight);
 
 // Create the svg group for the chart/visualization area
-var chart = svg.append("g")
-  // Shift the chart
+var chartGroup = svg.append("g")
+  // Shift the chartGroup
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
 
@@ -68,81 +68,75 @@ d3.csv("./assets/data/data.csv", function(error, data){
         .domain([d3.min(data, d => d.poverty) - 1,
           d3.max(data, d => d.poverty) - 1])
           // Enable use of the entire width of the chart
-          .range([0, chartWidth]);
+          .range([0, chartGroupWidth]);
 
   // Create the y-axis scale
   var yLinearScale = d3.scaleLinear()
         // Highest tick is always the highest healthcare value in the data
         .domain([0, d3.max(data, d => d.healthcare)])
         // Move the 0 value to the bottom of the visualization's y-axis
-        .range([chartHeight, 0]);
+        .range([chartGroupHeight, 0]);
 
 // *********************************AXES****************************************
   // Axis generators
   var xAxis = d3.axisBottom(xLinearScale);
   var yAxis = d3.axisLeft(yLinearScale);
 
-  // Append the chart axes groups
-  chart.append("g")
+  // Append the chartGroup axes groups
+  chartGroup.append("g")
     .classed("x-axis", true)
     // Shift the axis to the bottom of the chart
-    .attr("transform", `translate(0, ${chartHeight})`)
+    .attr("transform", `translate(0, ${chartGroupHeight})`)
     .call(xAxis);
 
-  chart.append("g")
+  chartGroup.append("g")
     .call(yAxis);
 
 // *********************************LABELS**************************************
   // X-axis label
-  var xLabel = chart.append("text")
-        .attr("x", chartWidth / 2)
-        .attr("y", chartHeight + 40)
+  var xLabel = chartGroup.append("text")
+        .attr("x", chartGroupWidth / 2)
+        .attr("y", chartGroupHeight + 40)
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
         .text("In Poverty (%)");
 
-  var yLabel = chart.append("text")
+  // Y-axis label
+  var yLabel = chartGroup.append("text")
     .attr("transform", "rotate(-90)")
     .attr("x", -240)
     .attr("y", -40)
     .attr("text-anchor", "middle")
     .style("font-size", "16px")
     .style("font-weight", "bold")
-    .text("Lacks Healthcare (%)")
+    .text("Lacks Healthcare (%)");
+
+  // State labels for the circles
+  // selectAll(null) to ensure enter() applies to every datum in the dataset
+  var circleLabels = chartGroup.selectAll(null)
+        .data(data)
+        .enter()
+        .append("text")
+          .attr("x", d => xLinearScale(d.poverty))
+          .attr("y", d => yLinearScale(d.healthcare))
+          .attr("text-anchor", "middle")
+          .style("font-size", "9px")
+          .style("font-weight", "bold")
+          .attr("fill", "black")
+          .text(d => d.abbr);
 
 // ******************************UPDATE PATTERN*********************************
   // Append circles
-  var circles = chart.selectAll("circle")
+  var circles = chartGroup.selectAll("circle")
         .data(data)
         .enter()
         .append("circle")
           .attr("cx", d => xLinearScale(d.poverty))
           .attr("cy", d => yLinearScale(d.healthcare))
-          .attr("r", "7.5")
-          .attr("fill", "blue")
+          .attr("r", "10")
+          .attr("fill", "lightskyblue")
           .attr("stroke", "black")
-
-
-
-
+          .attr("opacity", 0.4);
 
 });
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-//
