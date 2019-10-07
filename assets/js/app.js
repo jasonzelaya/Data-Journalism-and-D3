@@ -28,7 +28,7 @@ var chart = svg.append("g")
 // *********************************DATA****************************************
 
 // Retrieve/load the data and execute everything within the function
-d3.csv("https://jasonzelaya.github.io/Data-Journalism-and-D3/assets/data/data.csv", function(error, data){
+d3.csv("./assets/data/data.csv", function(error, data){
   // Check for errors
   if (error) throw (error);
 
@@ -65,8 +65,8 @@ d3.csv("https://jasonzelaya.github.io/Data-Journalism-and-D3/assets/data/data.cs
   var xLinearScale = d3.scaleLinear()
         // Adjust the start and end x-axis ticks to ensure the circles do not
           // overlap the edges of the chart
-        .domain([d3.min(data, d => d.poverty) * 1.8,
-          d3.max(data, d => d.poverty) * 1.8])
+        .domain([d3.min(data, d => d.poverty) - 1,
+          d3.max(data, d => d.poverty) - 1])
           // Enable use of the entire width of the chart
           .range([0, chartWidth]);
 
@@ -90,7 +90,7 @@ d3.csv("https://jasonzelaya.github.io/Data-Journalism-and-D3/assets/data/data.cs
     .call(xAxis);
 
   chart.append("g")
-    .call("yAxis");
+    .call(yAxis);
 
 // ******************************UPDATE PATTERN*********************************
   // Append circles
