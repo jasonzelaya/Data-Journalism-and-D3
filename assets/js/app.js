@@ -142,7 +142,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
   //       })
 
   // Poverty label
-  var xLabel = chartGroup.append("text")
+  var povertyLabel = chartGroup.append("text")
         .attr("x", chartGroupWidth / 2)
         .attr("y", chartGroupHeight + (margin.top * 2))
         .attr("text-anchor", "middle")
