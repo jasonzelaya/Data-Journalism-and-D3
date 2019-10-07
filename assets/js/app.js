@@ -27,6 +27,7 @@ var chartGroup = svg.append("g")
 // *****************************UPDATE FUNCTIONS********************************
 // Default selected x-axis label
 var chosenXAxis = "poverty";
+var chosenYAxis = "healthcare";
 
 // -----------------------------X-axis functions--------------------------------
 // Update x scale function
@@ -47,28 +48,37 @@ var chosenXAxis = "poverty";
 // }
 
 // Update the circlesGroup
-// var updateCirclesGroup = function(circlesGroup, newXScale, chosenXAxis){
-//   // Determine the value of 'label' based on chosenXAxis' value
-//   if (chosenXAxis === "poverty"){
-//     var label = "In Poverty (%)";
-//   }else if (chosenXAxis === "age"){
-//     var label = "Age (Median)";
-//   }else{
-//     var label = "Household Income (Median)"
-//   }
-//
-//   // Initialize the tooltip
-//   var toolTip = d3.tip()
-//         .attr("class", "tooltip")
-//         .attr("display")
-//         .html(function(d){
-//           `${label}: <strong>${d.[chosenXAxis]}</strong>`
-//
-//
-//         })
+var updateCirclesGroup = function(circles/*Group*/, newXScale, chosenXAxis){
+  // Determine the value of 'xLabel' based on chosenXAxis' value
+  if (chosenXAxis === "poverty"){
+    var xLabel = "In Poverty";
+  }else if (chosenXAxis === "age"){  /*(chosenXAxis === "age")*/
+    var xLabel = "Age";
+  }
+  // }else{
+  //   var label = "Household Income (Median)"
 
 
-// }
+  // Determine the value of yLabel based on chosenYAxis' value
+  // if (chosenYAxis === "healthcare"){
+  //   var yLabel = "Lacks Healthcare";
+  // } else(chosenYAxis === "smokes"){
+  //   var yLabel = "Smokes";
+  // }
+
+  // Initialize the tooltip
+  var toolTip = d3.tip()
+        .attr("class", "d3-tip")
+        .offset([80, -60])
+        .html(function(d){
+          // `<strong>${d[state]}</strong><br>
+           `<strong>${xLabel}:</strong> ${d[chosenXAxis]}%`//<br>
+           // <strong>${yLabel}:</strong> ${d[chosenYAxis]}%`
+
+          // .on("mouseover", d => tip.show(d))
+          // .on("mouseout", d => tip.hide(d))
+        });
+}
 
 
 
@@ -231,6 +241,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .attr("r", "10")
 
 
+
   // State (abbreviation) labels for the circles
   // selectAll(null) to ensure enter() applies to every datum in the dataset
   var circleLabels = chartGroup.selectAll(null)
@@ -244,6 +255,10 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .style("font-size", "9px")
           .style("font-weight", "bold")
           .text(d => d.abbr);
+
+
+
+
 
   // Click event to update chartGroup depending on the label clicked
   // circles.on("click", function(d){
