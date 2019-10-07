@@ -92,6 +92,25 @@ d3.csv("./assets/data/data.csv", function(error, data){
   chart.append("g")
     .call(yAxis);
 
+// *********************************LABELS**************************************
+  // X-axis label
+  var xLabel = chart.append("text")
+        .attr("x", chartWidth / 2)
+        .attr("y", chartHeight + 40)
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("In Poverty (%)");
+
+  var yLabel = chart.append("text")
+    .attr("transform", "rotate(-90)")
+    .attr("x", -240)
+    .attr("y", -40)
+    .attr("text-anchor", "middle")
+    .style("font-size", "16px")
+    .style("font-weight", "bold")
+    .text("Lacks Healthcare (%)")
+
 // ******************************UPDATE PATTERN*********************************
   // Append circles
   var circles = chart.selectAll("circle")
@@ -100,8 +119,9 @@ d3.csv("./assets/data/data.csv", function(error, data){
         .append("circle")
           .attr("cx", d => xLinearScale(d.poverty))
           .attr("cy", d => yLinearScale(d.healthcare))
-          .attr("r", 5)
+          .attr("r", "7.5")
           .attr("fill", "blue")
+          .attr("stroke", "black")
 
 
 
