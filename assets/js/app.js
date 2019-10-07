@@ -24,6 +24,46 @@ var chartGroup = svg.append("g")
   // Shift the chartGroup
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
 
+// *****************************UPDATE FUNCTIONS********************************
+// Default selected x-axis label
+var chosenXAxis = "In Poverty (%)";
+
+// -----------------------------X-axis functions--------------------------------
+// Update x scale function
+// var updateXScale = function(data, newXAxis){
+
+// }
+
+// Update the x-axis variable with a transition - xAxis defined in data loading function
+// var updateXAxis = function(newXScale, xAxis){
+  // x-axis generator
+  // xAxis = d3.axisBottom(newXScale)
+
+  // Transition the new x-axis
+//   chartGroup.append("g")
+//     .transition()
+//     .duration(1000)
+//     .call(xAxis)
+// }
+
+// Update the circlesGroup
+// var updateCirclesGroup = function(circlesGroup, newXScale, chosenXAxis){
+//   if (chosenXAxis === "In Poverty (%)"){
+//     var label = "In Poverty (%)";
+//   }else if (chosenXAxis === "Age (Median)"){
+//     var label = "Age (Median)";
+//   }else{
+//     var label = "Household Income (Median)"
+//   }
+// }
+
+
+
+// -----------------------------Y-axis functions--------------------------------
+
+
+
+
 
 // *********************************DATA****************************************
 
@@ -93,24 +133,76 @@ d3.csv("./assets/data/data.csv", function(error, data){
     .call(yAxis);
 
 // *********************************LABELS**************************************
-  // X-axis label
+  // ----------------------------X-axis labels----------------------------------
+
+  // Currently selected x-axis label
+  // var activeXLabel = chartGroup.append("text")
+  //       .on("click", (d, i) => {
+  //         d3.select(this)
+  //       })
+
+  // Poverty label
   var xLabel = chartGroup.append("text")
         .attr("x", chartGroupWidth / 2)
-        .attr("y", chartGroupHeight + 40)
+        .attr("y", chartGroupHeight + (margin.top * 2))
         .attr("text-anchor", "middle")
         .style("font-size", "16px")
         .style("font-weight", "bold")
         .text("In Poverty (%)");
 
-  // Y-axis label
-  var yLabel = chartGroup.append("text")
-    .attr("transform", "rotate(-90)")
-    .attr("x", -240)
-    .attr("y", -40)
-    .attr("text-anchor", "middle")
-    .style("font-size", "16px")
-    .style("font-weight", "bold")
-    .text("Lacks Healthcare (%)");
+  // Age label
+  var ageLabel = chartGroup.append("text")
+        .attr("x", chartGroupWidth / 2)
+        .attr("y", chartGroupHeight + (margin.top * 3))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Age (Median)");
+
+  // Income label
+  var incomeLabel = chartGroup.append("text")
+        .attr("x", chartGroupWidth / 2)
+        .attr("y", chartGroupHeight + (margin.top * 4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Household Income (Median)");
+
+
+  // ----------------------------Y-axis labels----------------------------------
+  // Currently selected y-axis label
+  // var activeYLabel
+
+  // Healthcare label
+  var healthcareLabel = chartGroup.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -((margin.left * 2) + (margin.right * 2)))
+        .attr("y", -(margin.right * 2))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Lacks Healthcare (%)");
+
+  // Smokes label
+  var smokesLabel = chartGroup.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -((margin.left * 2) + (margin.right * 2)))
+        .attr("y", -(margin.right * 3))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Smokes (%)");
+
+  // Obese label
+  var obeseLabel = chartGroup.append("text")
+        .attr("transform", "rotate(-90)")
+        .attr("x", -((margin.left * 2) + (margin.right * 2)))
+        .attr("y", -(margin.right * 4))
+        .attr("text-anchor", "middle")
+        .style("font-size", "16px")
+        .style("font-weight", "bold")
+        .text("Obese (%)");
+
 
   // State labels for the circles
   // selectAll(null) to ensure enter() applies to every datum in the dataset
@@ -138,5 +230,22 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .attr("fill", "lightskyblue")
           .attr("stroke", "black")
           .attr("opacity", 0.4);
+
+
+  // Click event to update chartGroup depending on the label clicked
+  // circles.on("click", function(d){
+  //   // Get the label clicked on
+  //   var clickedXLabel = d3.select(this).("value")
+  //
+  //   // If chosenXAxis is not the value clicked
+  //   if (chosenXAxis !== clickedLabel){
+  //     // Reassign the chosenXAxis value to the label clicked on to ensure
+  //      // the data rendered always corresponds to the x-axis label clicked
+  //      chosenXAxis = clickedXLabel
+  //   }
+  //
+  //
+  //
+  // })
 
 });
