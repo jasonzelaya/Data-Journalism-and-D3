@@ -1,6 +1,6 @@
 # Data Journalism and D3
 
-#### --Status: Active
+#### --Status: Completed
 
 ### Technologies
 * D3.js
@@ -10,3 +10,5 @@
 * HTML
 * CSS
 
+#### GitHub Page
+https://jasonzelaya.github.io/Data-Journalism-and-D3/
