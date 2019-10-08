@@ -79,7 +79,7 @@ function updateToolTip(chosenXAxis, /*chosenYAxis, */ circlesGroup){
   } else if (chosenXAxis === "age"){
     var xLabel = "Age:";
   } else {
-    var xLabel = "Household Income:";
+    var xLabel = "Income:";
   }
 
   // Initialize the tooltip
@@ -106,7 +106,74 @@ function updateToolTip(chosenXAxis, /*chosenYAxis, */ circlesGroup){
 
 // -----------------------------Y-axis functions--------------------------------
 
+// Function to update the y scale when an y-axis label is clicked on
+function updateYScale(data, chosenYAxis){
+  // Create the y-axis scale
+  var yLinearScale = d3.scaleLinear()
+        // Adjust the top y-axis tick to ensure the circles do not overlap the
+          // top of the chart
+        .domain([0, d3.max(data, d => d[chosenYAxis]) * 1.045])
+        // Move the 0 value to the bottom of the visualization's y-axis
+        .range([chartGroupHeight, 0]);
 
+  return yLinearScale;
+}
+
+
+// Function to update the y-axes with a transition when a label is clicked
+function updateYAxes(newYScale, yAxis){
+  // Y-axis generator
+  var yAxisGenerator = d3.axisLeft(newYScale);
+
+  // Create the Y-axis with a transition
+  yAxis.transition()
+    .duration(1000)
+    .call(yAxisGenerator);
+
+  return yAxis;
+}
+
+
+// Function used for updating the circles group with a transition to new circles
+function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
+
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cy", d => newYScale(d[chosenYAxis]));
+
+  return circlesGroup;
+}
+
+
+// Function used for updating the values in the tooltips for the circles
+function updateToolTipY(chosenYAxis, circlesGroup){
+  // Determine the 'xLabel' value
+  if (chosenYAxis === "healthcare"){
+    var yLabel = "Healthcare:";
+  } else if (chosenYAxis === "smokes"){
+    var yLabel = "Smokes:";
+  } else {
+    var yLabel = "Obesity:";
+  }
+
+  // Initialize the tooltip
+  var toolTip = d3.tip()
+    // Add styling from d3Style.css
+    .attr("class", "d3-tip")
+    .offset([80, -60])
+    .html(d => `${d.state}<br>${yLabel} ${d[chosenYAxis]}`);
+
+  // Create the tooltip
+  circlesGroup.call(toolTip);
+
+  circlesGroup
+    // Mouseover event listener
+    .on("mouseover", d => toolTip.show(d))
+    // Mouseout event listener
+    .on("mouseout", d => toolTip.hide(d));
+
+    return circlesGroup
+};
 
 
 
