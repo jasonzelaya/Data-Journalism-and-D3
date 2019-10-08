@@ -73,29 +73,32 @@ function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
 
 // Function used for updating the values in the tooltips for the circles
 function updateToolTip(chosenXAxis, /*chosenYAxis, */ circlesGroup){
-  // abbr, x, y
+  // Determine the 'xLabel' value
+  if (chosenXAxis === "poverty"){
+    var xLabel = "Poverty:";
+  } else if (chosenXAxis === "age"){
+    var xLabel = "Age:";
+  } else {
+    var xLabel = "Household Income:";
+  }
 
   // Initialize the tooltip
   var toolTip = d3.tip()
     // Add styling from d3Style.css
     .attr("class", "d3-tip")
     .offset([80, -60])
-    .html(d => `${d.abbr}<br>${d[chosenXAxis]}`); /*<br>${d[chosenYAxis]}*/
+    .html(d => `${d.state}<br>${xLabel} ${d[chosenXAxis]}`);
 
   // Create the tooltip
-  circlesGroup.call(toolTip)
-    // Mouseover event listener
-    .on("mouseover", function(d){
-        d3.select(d, this)
-          .show(d))
-    })
-    // Mouseout event listener
-    .on("mouseout", function(d){
-      d3.select(this)
-        .hide(d));
-    })
+  circlesGroup.call(toolTip);
 
-  return circlesGroup;
+  circlesGroup
+    // Mouseover event listener
+    .on("mouseover", d => toolTip.show(d))
+    // Mouseout event listener
+    .on("mouseout", d => toolTip.hide(d));
+
+    return circlesGroup
 };
 
 
@@ -268,5 +271,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .style("font-size", "9px")
           .style("font-weight", "bold")
           .text(d => d.abbr);
+
+  // circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
 
 });
