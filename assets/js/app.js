@@ -236,10 +236,6 @@ d3.csv("./assets/data/data.csv", function(error, data){
             });
 
 
-    // Create the tooltip
-    circlesGroup.call(toolTip);
-
-
 // *********************************LABELS**************************************
   // ----------------------------X-axis labels----------------------------------
   // X-axis label group
@@ -315,9 +311,21 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .attr("y", d => yLinearScale(d.healthcare))
           .style("font-size", "9px")
           .style("font-weight", "bold")
-          .text(d => d.abbr);
+          .text(d => d.abbr)
+          // Mouse events
+          .on("mouseover", function(d) {
+            // Show the tooltip
+            toolTip.show(d, this);
+          })
+          .on("mouseout", function(d) {
+            // Remove the tooltip
+            toolTip.hide(d);
+          });
 
 
+  // Create the tooltip
+  circlesGroup.call(toolTip);
+  
 // ****************************EVENT LISTENERS**********************************
 
   // Event listener for x-axis labels
