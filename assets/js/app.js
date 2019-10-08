@@ -147,7 +147,8 @@ function updateCircleLabelsY(circleLabels, newYScale, chosenYAxis){
         var xLabel = `${chosenXAxis}: ${d[chosenXAxis]}%`
       } else {
         // Values corresponding to the chosen x-axis label
-        var xLabel = `${chosenXAxis}: ${d[chosenXAxis]}`;
+        var xLabel = `${chosenXAxis}: ${parseFloat(d[chosenXAxis])
+          .toLocaleString("en")}`;
       }
 
       // Tooltip contents
@@ -229,10 +230,14 @@ d3.csv("./assets/data/data.csv", function(error, data){
             .on("mouseover", function(d) {
               // Show the tooltip
               toolTip.show(d, this);
+              d3.select(this)
+                .style("stroke", "#696969")
             })
             .on("mouseout", function(d) {
               // Remove the tooltip
               toolTip.hide(d);
+              d3.select(this)
+                .style("stroke", "#e3e3e3")
             });
 
 
@@ -325,7 +330,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Create the tooltip
   circlesGroup.call(toolTip);
-  
+
 // ****************************EVENT LISTENERS**********************************
 
   // Event listener for x-axis labels
