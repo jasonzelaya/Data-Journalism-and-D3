@@ -2,10 +2,13 @@
 
 #### --Status: Completed
 
+Project Intro/Objective
+The purpose of this project is to create an interactive and animated scatterplot using D3 to determine how certain risk factors impact chosen demographics. The scatterplot shows the relationships between the Poverty, Age and Household Income demographics against the Lack of Healthcare, Smokers and Obesity risk factors.
+
 ### Technologies
-* D3.js
-* D3-tip.js
 * JavaScript
+* D3
+* D3-tip
 * Bootstrap 4
 * HTML
 * CSS
