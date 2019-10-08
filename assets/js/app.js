@@ -31,7 +31,7 @@ var chosenYAxis = "healthcare";
 
 // -----------------------------X-axis functions--------------------------------
 
-// Function used to update the x scale when an x-axis label is clicked on
+// Function to update the x scale when an x-axis label is clicked on
 function updateXScale(data, chosenXAxis){
   // Create the x-axis scale
   var xLinearScale = d3.scaleLinear()
@@ -46,27 +46,57 @@ function updateXScale(data, chosenXAxis){
 }
 
 
-// Function used to update the x-axes with a transition when a label is clicked
+// Function to update the x-axes with a transition when a label is clicked
 function updateXAxes(newXScale, xAxis){
   // X-axis generator
-  var xAxis = d3.axisBottom(newXScale);
+  var xAxisGenerator = d3.axisBottom(newXScale);
 
-  // Create the x-axis
-  circlesGroup.append("g")
-    // Place the axis at the bottom of the chart
-    .attr("transform", `translate(0, ${chartGroupHeight})`)
-    // Render the axis by sliding it into place
-    .transition()
+  // Create the x-axis with a transition
+  xAxis.transition()
     .duration(1000)
-    .call(xAxis);
+    .call(xAxisGenerator);
+
+  return xAxis;
 }
 
 
-// Function to update the data point circles when a label is clicked
-// function updateCirclesGroup
+// Function used for updating the circles group with a transition to new circles
+function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
 
-// Update:circlesGroup, tooltip
+  circlesGroup.transition()
+    .duration(1000)
+    .attr("cx", d => newXScale(d[chosenXAxis]));
 
+  return circlesGroup;
+}
+
+
+// Function used for updating the values in the tooltips for the circles
+function updateToolTip(chosenXAxis, /*chosenYAxis, */ circlesGroup){
+  // abbr, x, y
+
+  // Initialize the tooltip
+  var toolTip = d3.tip()
+    // Add styling from d3Style.css
+    .attr("class", "d3-tip")
+    .offset([80, -60])
+    .html(d => `${d.abbr}<br>${d[chosenXAxis]}`); /*<br>${d[chosenYAxis]}*/
+
+  // Create the tooltip
+  circlesGroup.call(toolTip)
+    // Mouseover event listener
+    .on("mouseover", function(d){
+        d3.select(d, this)
+          .show(d))
+    })
+    // Mouseout event listener
+    .on("mouseout", function(d){
+      d3.select(this)
+        .hide(d));
+    })
+
+  return circlesGroup;
+};
 
 
 
@@ -137,17 +167,17 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
 // *********************************AXES****************************************
   // Axis generators
-  var xAxis = d3.axisBottom(xLinearScale);
-  var yAxis = d3.axisLeft(yLinearScale);
+  var xAxisGenerator = d3.axisBottom(xLinearScale);
+  var yAxisGenerator = d3.axisLeft(yLinearScale);
 
   // Append the chartGroup axes groups
-  chartGroup.append("g")
+  var xAxis = chartGroup.append("g")
     // Shift the axis to the bottom of the chart
     .attr("transform", `translate(0, ${chartGroupHeight})`)
-    .call(xAxis);
+    .call(xAxisGenerator);
 
-  chartGroup.append("g")
-    .call(yAxis);
+  var yAxis = chartGroup.append("g")
+    .call(yAxisGenerator);
 
 
   // ******************************UPDATE PATTERN*********************************
@@ -173,18 +203,21 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Poverty label
   var povertyLabel = xLabelsGroup.append("text")
+        .classed("active", true)
         .attr("y", margin.top * 2.2)
         .attr("value", "poverty")
         .text("In Poverty (%)");
 
   // Age label
   var ageLabel = xLabelsGroup.append("text")
+        .classed("inactive", true)
         .attr("y", margin.top * 3.3)
         .attr("value", "age")
         .text("Age (Median)");
 
   // Income label
   var incomeLabel = xLabelsGroup.append("text")
+        .classed("inactive", true)
         .attr("y", margin.top * 4.4)
         .attr("value", "income")
         .text("Household Income (Median)");
@@ -199,6 +232,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Healthcare label
   var healthcareLabel = yLabelsGroup.append("text")
+        .classed("active", true)
         .attr("x", -((margin.left * 2) + (margin.right * 2)))
         .attr("y", -(margin.right * 2))
         .attr("value", "healthcare")
@@ -206,6 +240,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Smokes label
   var smokesLabel = yLabelsGroup.append("text")
+        .classed("inactive", true)
         .attr("x", -((margin.left * 2) + (margin.right * 2)))
         .attr("y", -(margin.right * 3.1))
         .attr("value", "smokes")
@@ -213,6 +248,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Obese label
   var obeseLabel = yLabelsGroup.append("text")
+        .classed("inactive", true)
         .attr("x", -((margin.left * 2) + (margin.right * 2)))
         .attr("y", -(margin.right * 4.2))
         .attr("value", "obesity")
