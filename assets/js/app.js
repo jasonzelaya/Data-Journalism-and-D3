@@ -31,6 +31,44 @@ var chosenYAxis = "healthcare";
 
 // -----------------------------X-axis functions--------------------------------
 
+// Function used to update the x scale when an x-axis label is clicked on
+function updateXScale(data, chosenXAxis){
+  // Create the x-axis scale
+  var xLinearScale = d3.scaleLinear()
+        // Adjust the start and end x-axis ticks to ensure the circles do not
+          // overlap the edges of the chart
+          .domain([d3.min(data, d => d[chosenXAxis]) * 0.9,
+            d3.max(data, d => d[chosenXAxis]) * 1.04])
+          // Enable use of the entire width of the chart
+          .range([0, chartGroupWidth]);
+
+  return xLinearScale;
+}
+
+
+// Function used to update the x-axes with a transition when a label is clicked
+function updateXAxes(newXScale, xAxis){
+  // X-axis generator
+  var xAxis = d3.axisBottom(newXScale);
+
+  // Create the x-axis
+  circlesGroup.append("g")
+    // Place the axis at the bottom of the chart
+    .attr("transform", `translate(0, ${chartGroupHeight})`)
+    // Render the axis by sliding it into place
+    .transition()
+    .duration(1000)
+    .call(xAxis);
+}
+
+
+// Function to update the data point circles when a label is clicked
+// function updateCirclesGroup
+
+// Update:circlesGroup, tooltip
+
+
+
 
 
 // -----------------------------Y-axis functions--------------------------------
@@ -75,12 +113,17 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
 
 // *******************************SCALES****************************************
+
+  // Create the x-axis scale
+  // var xLinearScale = xScale(data, chosenXAxis);
+
+
   // Create the x-axis scale
   var xLinearScale = d3.scaleLinear()
         // Adjust the start and end x-axis ticks to ensure the circles do not
           // overlap the edges of the chart
-        .domain([d3.min(data, d => d.poverty) - 1,
-          d3.max(data, d => d.poverty) - 1])
+        .domain([d3.min(data, d => d.poverty) * 0.9,
+          d3.max(data, d => d.poverty) * 1.04])
           // Enable use of the entire width of the chart
           .range([0, chartGroupWidth]);
 
@@ -88,7 +131,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
   var yLinearScale = d3.scaleLinear()
         // Adjust the top y-axis tick to ensure the circles do not overlap the
           // top of the chart
-        .domain([0, d3.max(data, d => d.healthcare) + 1])
+        .domain([0, d3.max(data, d => d.healthcare) * 1.045])
         // Move the 0 value to the bottom of the visualization's y-axis
         .range([chartGroupHeight, 0]);
 
@@ -99,7 +142,6 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
   // Append the chartGroup axes groups
   chartGroup.append("g")
-    .classed("x-axis", true)
     // Shift the axis to the bottom of the chart
     .attr("transform", `translate(0, ${chartGroupHeight})`)
     .call(xAxis);
