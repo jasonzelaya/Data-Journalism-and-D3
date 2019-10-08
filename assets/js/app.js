@@ -71,39 +71,6 @@ function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
 }
 
 
-// Function used for updating the values in the tooltips for the circles
-function updateToolTip(chosenXAxis, /*chosenYAxis, */ circlesGroup){
-  // Determine the 'xLabel' value
-  if (chosenXAxis === "poverty"){
-    var xLabel = "Poverty:";
-  } else if (chosenXAxis === "age"){
-    var xLabel = "Age:";
-  } else {
-    var xLabel = "Income:";
-  }
-
-  // Initialize the tooltip
-  var toolTip = d3.tip()
-    // Add styling from d3Style.css
-    .attr("class", "d3-tip")
-    .offset([80, -60])
-    .html(d => `${d.state}<br>${xLabel} ${d[chosenXAxis]}`);
-
-  // Create the tooltip
-  circlesGroup.call(toolTip);
-
-  circlesGroup
-    // Mouseover event listener
-    .on("mouseover", d => toolTip.show(d))
-    // Mouseout event listener
-    .on("mouseout", d => toolTip.hide(d));
-
-    return circlesGroup
-};
-
-
-
-
 // -----------------------------Y-axis functions--------------------------------
 
 // Function to update the y scale when an y-axis label is clicked on
@@ -145,9 +112,20 @@ function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
 }
 
 
-// Function used for updating the values in the tooltips for the circles
-function updateToolTipY(chosenYAxis, circlesGroup){
+
+
+// Function used for updating the tooltip
+function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup){
   // Determine the 'xLabel' value
+  if (chosenXAxis === "poverty"){
+    var xLabel = "Poverty:";
+  } else if (chosenXAxis === "age"){
+    var xLabel = "Age:";
+  } else {
+    var xLabel = "Income:";
+  }
+
+  // Determine the 'yLabel' value
   if (chosenYAxis === "healthcare"){
     var yLabel = "Healthcare:";
   } else if (chosenYAxis === "smokes"){
@@ -156,12 +134,14 @@ function updateToolTipY(chosenYAxis, circlesGroup){
     var yLabel = "Obesity:";
   }
 
+
+
   // Initialize the tooltip
   var toolTip = d3.tip()
     // Add styling from d3Style.css
     .attr("class", "d3-tip")
     .offset([80, -60])
-    .html(d => `${d.state}<br>${yLabel} ${d[chosenYAxis]}`);
+    .html(d => `${d.state}<br>${xLabel} ${d[chosenXAxis]}<br>${yLabel} ${d[chosenYAxis]}`);
 
   // Create the tooltip
   circlesGroup.call(toolTip);
@@ -174,8 +154,6 @@ function updateToolTipY(chosenYAxis, circlesGroup){
 
     return circlesGroup
 };
-
-
 
 // *********************************DATA****************************************
 
@@ -218,12 +196,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
   var xLinearScale = updateXScale(data, chosenXAxis);
 
   // Create the y-axis scale
-  var yLinearScale = d3.scaleLinear()
-        // Adjust the top y-axis tick to ensure the circles do not overlap the
-          // top of the chart
-        .domain([0, d3.max(data, d => d.healthcare) * 1.045])
-        // Move the 0 value to the bottom of the visualization's y-axis
-        .range([chartGroupHeight, 0]);
+  var yLinearScale = updateYScale(data, chosenYAxis);
 
 // *********************************AXES****************************************
   // Axis generators
@@ -330,9 +303,9 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .text(d => d.abbr);
 
   // Initial tooltip
-  circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
+  circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
 
-
+// ****************************EVENT LISTENERS**********************************
   // Event listener for x-axis labels
   xLabelsGroup.selectAll("text")
     .on("click", function(){
@@ -354,7 +327,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
          circlesGroup = updateCirclesGroup(circlesGroup, xLinearScale, chosenXAxis)
 
          // Update tooltips
-         circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
+         circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
 
 
         // Activate/Deactivate labels based on the one that was clicked
@@ -393,5 +366,67 @@ d3.csv("./assets/data/data.csv", function(error, data){
         }
       }
     });
+
+
+    // Event listener for y-axis labels
+    yLabelsGroup.selectAll("text")
+      .on("click", function(){
+        // Label clicked on
+        var yLabelValue = d3.select(this).attr("value");
+        // Ensure the value of chosenYAxis is always the label clicked on
+        if (yLabelValue !== chosenYAxis){
+          chosenYAxis = yLabelValue;
+
+          // The following functions are defined above the csv import function
+
+          // Update y scale
+          yLinearScale = updateYScale(data, chosenYAxis)
+
+          // Update y-axis
+          yAxis = updateYAxes(yLinearScale, yAxis)
+
+          // Update circles group with new y values
+          circlesGroup = updateCirclesGroupY(circlesGroup, yLinearScale, chosenYAxis)
+
+          // Update tooltips
+          circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
+
+
+          // Activate/Deactivate labels based on the one that was clicked
+          if (chosenYAxis === "healthcare"){
+            healthcareLabel
+              .classed("active", true)
+              .classed("inactive", false)
+            smokesLabel
+              .classed("active", false)
+              .classed("inactive", true)
+            obeseLabel
+              .classed("active", false)
+              .classed("inactive", true)
+
+          } else if (chosenYAxis === "smokes") {
+            healthcareLabel
+              .classed("active", false)
+              .classed("inactive", true)
+            smokesLabel
+              .classed("active", true)
+              .classed("inactive", false)
+            obeseLabel
+              .classed("active", false)
+              .classed("inactive", true)
+
+          } else {
+            healthcareLabel
+              .classed("active", false)
+              .classed("inactive", true)
+            smokesLabel
+              .classed("active", false)
+              .classed("inactive", true)
+            obeseLabel
+              .classed("active", true)
+              .classed("inactive", false)
+          }
+        }
+      });
 
 });
