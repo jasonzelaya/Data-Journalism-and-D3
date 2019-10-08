@@ -43,7 +43,7 @@ function updateXScale(data, chosenXAxis){
           .range([0, chartGroupWidth]);
 
   return xLinearScale;
-}
+};
 
 
 // Function to update the x-axes with a transition when a label is clicked
@@ -57,7 +57,7 @@ function updateXAxes(newXScale, xAxis){
     .call(xAxisGenerator);
 
   return xAxis;
-}
+};
 
 
 // Function used for updating the circles group with a transition to new circles
@@ -68,7 +68,7 @@ function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
     .attr("cx", d => newXScale(d[chosenXAxis]));
 
   return circlesGroup;
-}
+};
 
 // Function used for updating the circle labels
 function updateCircleLabelsX(circleLabels, newXScale, chosenXAxis){
@@ -78,7 +78,7 @@ function updateCircleLabelsX(circleLabels, newXScale, chosenXAxis){
     .attr("x", d => newXScale(d[chosenXAxis]));
 
   return circleLabels;
-}
+};
 
 // -----------------------------Y-axis functions--------------------------------
 
@@ -93,7 +93,7 @@ function updateYScale(data, chosenYAxis){
         .range([chartGroupHeight, 0]);
 
   return yLinearScale;
-}
+};
 
 
 // Function to update the y-axes with a transition when a label is clicked
@@ -107,7 +107,7 @@ function updateYAxes(newYScale, yAxis){
     .call(yAxisGenerator);
 
   return yAxis;
-}
+};
 
 // Function used for updating the circles group with a transition to new circles
 function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
@@ -117,7 +117,7 @@ function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
     .attr("cy", d => newYScale(d[chosenYAxis]));
 
   return circlesGroup;
-}
+};
 
 // Function used for updating the circle labels
 function updateCircleLabelsY(circleLabels, newYScale, chosenYAxis){
@@ -127,29 +127,7 @@ function updateCircleLabelsY(circleLabels, newYScale, chosenYAxis){
     .attr("y", d => newYScale(d[chosenYAxis]));
 
   return circleLabels;
-}
-
-
-
-// Function used for updating the tooltip
-function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup){
-  // Determine the 'xLabel' value
-  if (chosenXAxis === "poverty"){
-    var xLabel = "Poverty:";
-  } else if (chosenXAxis === "age"){
-    var xLabel = "Age:";
-  } else {
-    var xLabel = "Income:";
-  }
-
-  // Determine the 'yLabel' value
-  if (chosenYAxis === "healthcare"){
-    var yLabel = "Healthcare:";
-  } else if (chosenYAxis === "smokes"){
-    var yLabel = "Smokes:";
-  } else {
-    var yLabel = "Obesity:";
-  }
+};
 
 
 
@@ -158,19 +136,25 @@ function updateToolTip(chosenXAxis, chosenYAxis, circlesGroup){
     // Add styling from d3Style.css
     .attr("class", "d3-tip")
     .offset([80, -60])
-    .html(d => `${d.state}<br>${xLabel} ${d[chosenXAxis]}<br>${yLabel} ${d[chosenYAxis]}`);
+    .html(function(d){
 
-  // Create the tooltip
-  circlesGroup.call(toolTip);
+      // Values corresponding to the chosen y-axis label
+      var yLabel = `${chosenYAxis}: ${d[chosenYAxis]}` ;
 
-  circlesGroup
-    // Mouseover event listener
-    .on("mouseover", d => toolTip.show(d))
-    // Mouseout event listener
-    .on("mouseout", d => toolTip.hide(d));
+      // If chosenXAxis is the poverty value
+      if (chosenXAxis === "poverty"){
+        // Add a '%' after the values corresponding to the chosen x-axis label
+        var xLabel = `${chosenXAxis}: ${d[chosenXAxis]}%`
+      } else {
+        // Values corresponding to the chosen x-axis label
+        var xLabel = `${chosenXAxis}: ${d[chosenXAxis]}`;
+      }
 
-    return circlesGroup
-};
+      // Tooltip contents
+      return `${d.state}<br>${xLabel}<br>${yLabel}`
+    });
+
+
 
 // *********************************DATA****************************************
 
@@ -241,6 +225,19 @@ d3.csv("./assets/data/data.csv", function(error, data){
             .attr("cx", d => xLinearScale(d.poverty))
             .attr("cy", d => yLinearScale(d.healthcare))
             .attr("r", "10")
+            // Mouse events
+            .on("mouseover", function(d) {
+              // Show the tooltip
+              toolTip.show(d, this);
+            })
+            .on("mouseout", function(d) {
+              // Remove the tooltip
+              toolTip.hide(d);
+            });
+
+
+    // Create the tooltip
+    circlesGroup.call(toolTip);
 
 
 // *********************************LABELS**************************************
@@ -279,7 +276,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
   var yLabelsGroup = chartGroup.append("g")
     .classed("aText", true)
     .attr("transform", "rotate(-90)")
-    .attr("font-weight", "bold")
+    .attr("font-weight", "bold");
 
   // Healthcare label
   var healthcareLabel = yLabelsGroup.append("text")
@@ -320,9 +317,6 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .style("font-weight", "bold")
           .text(d => d.abbr);
 
-  // Initial tooltip
-  circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
-
 
 // ****************************EVENT LISTENERS**********************************
 
@@ -338,18 +332,16 @@ d3.csv("./assets/data/data.csv", function(error, data){
         // The following functions are defined above the csv import function
 
         // Update x scale
-        xLinearScale = updateXScale(data, chosenXAxis)
+        xLinearScale = updateXScale(data, chosenXAxis);
 
         // Update x-axis
-        xAxis = updateXAxes(xLinearScale, xAxis)
+        xAxis = updateXAxes(xLinearScale, xAxis);
 
          // Update circles group with new x values
-         circlesGroup = updateCirclesGroup(circlesGroup, xLinearScale, chosenXAxis)
+         circlesGroup = updateCirclesGroup(circlesGroup, xLinearScale, chosenXAxis);
 
-         circleLabels = updateCircleLabelsX(circleLabels, xLinearScale, chosenXAxis)
-
-         // Update tooltips
-         circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
+         // Update circle labels
+         circleLabels = updateCircleLabelsX(circleLabels, xLinearScale, chosenXAxis);
 
 
         // Activate/Deactivate labels based on the one that was clicked
@@ -402,18 +394,16 @@ d3.csv("./assets/data/data.csv", function(error, data){
           // The following functions are defined above the csv import function
 
           // Update y scale
-          yLinearScale = updateYScale(data, chosenYAxis)
+          yLinearScale = updateYScale(data, chosenYAxis);
 
           // Update y-axis
-          yAxis = updateYAxes(yLinearScale, yAxis)
+          yAxis = updateYAxes(yLinearScale, yAxis);
 
           // Update circles group with new y values
-          circlesGroup = updateCirclesGroupY(circlesGroup, yLinearScale, chosenYAxis)
+          circlesGroup = updateCirclesGroupY(circlesGroup, yLinearScale, chosenYAxis);
 
-          circleLabels = updateCircleLabelsY(circleLabels, yLinearScale, chosenYAxis)
-
-          // Update tooltips
-          circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
+          // Update circle labels
+          circleLabels = updateCircleLabelsY(circleLabels, yLinearScale, chosenYAxis);
 
 
           // Activate/Deactivate labels based on the one that was clicked
