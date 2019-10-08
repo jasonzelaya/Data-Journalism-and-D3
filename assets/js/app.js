@@ -53,7 +53,7 @@ function updateXAxes(newXScale, xAxis){
 
   // Create the x-axis with a transition
   xAxis.transition()
-    .duration(1000)
+    .duration(300)
     .call(xAxisGenerator);
 
   return xAxis;
@@ -64,7 +64,7 @@ function updateXAxes(newXScale, xAxis){
 function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
 
   circlesGroup.transition()
-    .duration(1000)
+    .duration(300)
     .attr("cx", d => newXScale(d[chosenXAxis]));
 
   return circlesGroup;
@@ -74,7 +74,7 @@ function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
 function updateCircleLabelsX(circleLabels, newXScale, chosenXAxis){
 
   circleLabels.transition()
-    .duration(1000)
+    .duration(300)
     .attr("x", d => newXScale(d[chosenXAxis]));
 
   return circleLabels;
@@ -88,7 +88,8 @@ function updateYScale(data, chosenYAxis){
   var yLinearScale = d3.scaleLinear()
         // Adjust the top y-axis tick to ensure the circles do not overlap the
           // top of the chart
-        .domain([0, d3.max(data, d => d[chosenYAxis]) * 1.045])
+        .domain([d3.min(data, d => d[chosenYAxis]) * 0.9,
+        d3.max(data, d => d[chosenYAxis]) * 1.045])
         // Move the 0 value to the bottom of the visualization's y-axis
         .range([chartGroupHeight, 0]);
 
@@ -103,7 +104,7 @@ function updateYAxes(newYScale, yAxis){
 
   // Create the Y-axis with a transition
   yAxis.transition()
-    .duration(1000)
+    .duration(300)
     .call(yAxisGenerator);
 
   return yAxis;
@@ -113,7 +114,7 @@ function updateYAxes(newYScale, yAxis){
 function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
 
   circlesGroup.transition()
-    .duration(1000)
+    .duration(300)
     .attr("cy", d => newYScale(d[chosenYAxis]));
 
   return circlesGroup;
@@ -123,7 +124,7 @@ function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
 function updateCircleLabelsY(circleLabels, newYScale, chosenYAxis){
 
   circleLabels.transition()
-    .duration(1000)
+    .duration(300)
     .attr("y", d => newYScale(d[chosenYAxis]));
 
   return circleLabels;
