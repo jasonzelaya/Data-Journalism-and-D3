@@ -70,6 +70,15 @@ function updateCirclesGroup(circlesGroup, newXScale, chosenXAxis){
   return circlesGroup;
 }
 
+// Function used for updating the circle labels
+function updateCircleLabelsX(circleLabels, newXScale, chosenXAxis){
+
+  circleLabels.transition()
+    .duration(1000)
+    .attr("x", d => newXScale(d[chosenXAxis]));
+
+  return circleLabels;
+}
 
 // -----------------------------Y-axis functions--------------------------------
 
@@ -100,7 +109,6 @@ function updateYAxes(newYScale, yAxis){
   return yAxis;
 }
 
-
 // Function used for updating the circles group with a transition to new circles
 function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
 
@@ -111,6 +119,15 @@ function updateCirclesGroupY(circlesGroup, newYScale, chosenYAxis){
   return circlesGroup;
 }
 
+// Function used for updating the circle labels
+function updateCircleLabelsY(circleLabels, newYScale, chosenYAxis){
+
+  circleLabels.transition()
+    .duration(1000)
+    .attr("y", d => newYScale(d[chosenYAxis]));
+
+  return circleLabels;
+}
 
 
 
@@ -225,6 +242,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
             .attr("cy", d => yLinearScale(d.healthcare))
             .attr("r", "10")
 
+
 // *********************************LABELS**************************************
   // ----------------------------X-axis labels----------------------------------
   // X-axis label group
@@ -305,7 +323,9 @@ d3.csv("./assets/data/data.csv", function(error, data){
   // Initial tooltip
   circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
 
+
 // ****************************EVENT LISTENERS**********************************
+
   // Event listener for x-axis labels
   xLabelsGroup.selectAll("text")
     .on("click", function(){
@@ -325,6 +345,8 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
          // Update circles group with new x values
          circlesGroup = updateCirclesGroup(circlesGroup, xLinearScale, chosenXAxis)
+
+         circleLabels = updateCircleLabelsX(circleLabels, xLinearScale, chosenXAxis)
 
          // Update tooltips
          circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
@@ -387,6 +409,8 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
           // Update circles group with new y values
           circlesGroup = updateCirclesGroupY(circlesGroup, yLinearScale, chosenYAxis)
+
+          circleLabels = updateCircleLabelsY(circleLabels, yLinearScale, chosenYAxis)
 
           // Update tooltips
           circlesGroup = updateToolTip(chosenXAxis, chosenYAxis, circlesGroup)
