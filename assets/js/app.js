@@ -184,7 +184,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
 
 
   // ******************************UPDATE PATTERN*********************************
-    // Append circles
+    // Append initial circles
     var circlesGroup = chartGroup.selectAll("circle")
           .data(data)
           .enter()
@@ -272,6 +272,69 @@ d3.csv("./assets/data/data.csv", function(error, data){
           .style("font-weight", "bold")
           .text(d => d.abbr);
 
-  // circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
+  // Initial tooltip
+  circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
+
+
+  // Event listener for the x-axis labels
+  xLabelsGroup.selectAll("text")
+    .on("click", function(d){
+      // The label clicked on
+      var xLabelValue = d3.select(this).attr("value")
+      // Ensure the value of chosenXAxis is always the label clicked on
+      if (xLabelValue !== chosenXAxis){
+        chosenXAxis = xLabelValue
+
+        // The following functions are defined above the csv import function
+
+        // Update x scale
+        circlesGroup = updateXScale(data, chosenXAxis)
+
+        // Update x-axis
+        circlesGroup = updateXAxes(newXScale, xAxis)
+
+         // Update circles group
+         circlesGroup = updateCirclesGroup(circlesGroup, newXScale, chosenXAxis)
+
+         // Update tooltip
+         circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
+
+
+        // Activate/Deactivate labels based on the one that was clicked
+        if (chosenXAxis === "poverty"){
+          povertyLabel
+            .classed("active", true)
+            .classed("inactive", false)
+          ageLabel
+            .classed("active", false)
+            .classed("inactive", true)
+          incomeLabel
+            .classed("active", false)
+            .classed("inactive", true)
+
+        } else if (chosenXAxis === "age") {
+          povertyLabel
+            .classed("active", false)
+            .classed("inactive", true)
+          ageLabel
+            .classed("active", true)
+            .classed("inactive", false)
+          incomeLabel
+            .classed("active", false)
+            .classed("inactive", true)
+
+        } else {
+          povertyLabel
+            .classed("active", false)
+            .classed("inactive", true)
+          ageLabel
+            .classed("active", false)
+            .classed("inactive", true)
+          incomeLabel
+            .classed("active", true)
+            .classed("inactive", false)
+        }
+      }
+    });
 
 });
