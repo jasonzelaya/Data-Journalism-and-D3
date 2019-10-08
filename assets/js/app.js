@@ -148,17 +148,7 @@ d3.csv("./assets/data/data.csv", function(error, data){
 // *******************************SCALES****************************************
 
   // Create the x-axis scale
-  // var xLinearScale = xScale(data, chosenXAxis);
-
-
-  // Create the x-axis scale
-  var xLinearScale = d3.scaleLinear()
-        // Adjust the start and end x-axis ticks to ensure the circles do not
-          // overlap the edges of the chart
-        .domain([d3.min(data, d => d.poverty) * 0.9,
-          d3.max(data, d => d.poverty) * 1.04])
-          // Enable use of the entire width of the chart
-          .range([0, chartGroupWidth]);
+  var xLinearScale = updateXScale(data, chosenXAxis);
 
   // Create the y-axis scale
   var yLinearScale = d3.scaleLinear()
@@ -276,27 +266,27 @@ d3.csv("./assets/data/data.csv", function(error, data){
   circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
 
 
-  // Event listener for the x-axis labels
+  // Event listener for x-axis labels
   xLabelsGroup.selectAll("text")
-    .on("click", function(d){
-      // The label clicked on
-      var xLabelValue = d3.select(this).attr("value")
+    .on("click", function(){
+      // Label clicked on
+      var xLabelValue = d3.select(this).attr("value");
       // Ensure the value of chosenXAxis is always the label clicked on
       if (xLabelValue !== chosenXAxis){
-        chosenXAxis = xLabelValue
+        chosenXAxis = xLabelValue;
 
         // The following functions are defined above the csv import function
 
         // Update x scale
-        circlesGroup = updateXScale(data, chosenXAxis)
+        xLinearScale = updateXScale(data, chosenXAxis)
 
         // Update x-axis
-        circlesGroup = updateXAxes(newXScale, xAxis)
+        xAxis = updateXAxes(xLinearScale, xAxis)
 
-         // Update circles group
-         circlesGroup = updateCirclesGroup(circlesGroup, newXScale, chosenXAxis)
+         // Update circles group with new x values
+         circlesGroup = updateCirclesGroup(circlesGroup, xLinearScale, chosenXAxis)
 
-         // Update tooltip
+         // Update tooltips
          circlesGroup = updateToolTip(chosenXAxis, circlesGroup)
 
 
