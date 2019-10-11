@@ -1,3 +1,38 @@
+// **************************RESPONSIVE RESIZE**********************************
+// Function to make the SVG responsive to window resizing
+function responsivefy(svg) {
+  // Container is the DOM element that the SVG is appended to
+  const container = d3.select(svg.node().parentNode),
+      // Measure the container
+      width = parseInt(svg.style('width'), 10),
+      height = parseInt(svg.style('height'), 10),
+      // Find container's aspect ratio
+      aspect = width / height;
+
+  // Set viewBox attribute to the initial size
+  svg.attr('viewBox', `0 0 ${width} ${height}`)
+      // Control scaling with preserveAspectRatio
+      .attr('preserveAspectRatio', 'xMinYMid')
+      // Resize SVG on inital page load
+      .call(resize);
+
+  // Add event listener so the chart will be resized when the window resizes
+  d3.select(window).on(
+      'resize.' + container.attr('id'),
+      resize
+  );
+
+  // Function that resizes the chart
+  function resize() {
+    // Get the width of the container
+    const w = parseInt(container.style('width'));
+    // Resize SVG to fill container while maintaining a consistent aspect ratio
+    svg.attr('width', w);
+    svg.attr('height', Math.round(w / aspect));
+  }
+}
+
+
 // **************************CANVAS SET UP**************************************
 // Create the margins
 var margin = {left: 100, right: 20, top: 20, bottom: 100};
@@ -17,12 +52,15 @@ var svg = d3.select("#scatter")
       // Define the width
       .attr("width", svgWidth)
       // Define the height
-      .attr("height", svgHeight);
+      .attr("height", svgHeight)
+      // Make the chart resize relative the the window resize
+      .call(responsivefy);
 
 // Create the svg group for the chart/visualization area
 var chartGroup = svg.append("g")
   // Shift the chartGroup
   .attr("transform", `translate(${margin.left}, ${margin.top})`);
+
 
 // *****************************UPDATE FUNCTIONS********************************
 // Default selected x-axis label
